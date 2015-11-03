@@ -6,17 +6,25 @@ import (
 	"net/http"
 )
 
-func handleHttp(w http.ResponseWriter, r *http.Request) {
-	ret, err := http.Head("https://go.googlesource.com/go/+/go1.6")
+const baseGoURL = "https://go.googlesource.com/go/+/"
+const version = "go1.5"
+
+func checkURL(url string) bool {
+	r, err := http.Head(url)
 	if err != nil {
 		log.Print(err)
-		io.WriteString(w, "error from http.Head()")
+		return false
 	}
-	if ret.StatusCode != http.StatusOK {
-		io.WriteString(w, "Go 1.6 is not out yet...")
+	return r.StatusCode == http.StatusOK
+}
+
+func handleHttp(w http.ResponseWriter, r *http.Request) {
+	io.WriteString(w, version + " is ")
+	if checkURL(baseGoURL + version) {
+		io.WriteString(w, "out!")
 		return
 	}
-	io.WriteString(w, "Go 1.6 is out!")
+	io.WriteString(w, "not out yet...")
 }
 
 func main() {
