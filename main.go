@@ -26,7 +26,7 @@ type Server struct {
 
 func NewServer(version, url string) *Server {
 	s := &Server{version: version, url: url, out: false}
-	s.check()
+	go s.check()
 	return s
 }
 
