@@ -18,9 +18,27 @@ func checkURL(url string) bool {
 	return r.StatusCode == http.StatusOK
 }
 
-func handleHttp(w http.ResponseWriter, r *http.Request) {
+type Server struct {
+	version string
+	url string
+	out bool
+}
+
+func NewServer(version, url string) *Server {
+	s := &Server{version: version, url: url, out: false}
+	s.check()
+	return s
+}
+
+func (s *Server) check() {
+	if !s.out {
+		s.out = checkURL(s.url + s.version)
+	}
+}
+
+func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, version + " is ")
-	if checkURL(baseGoURL + version) {
+	if s.out {
 		io.WriteString(w, "out!")
 		return
 	}
@@ -28,6 +46,6 @@ func handleHttp(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/", handleHttp)
+	http.Handle("/", NewServer(version, baseGoURL))
 	http.ListenAndServe(":8080", nil)
 }
