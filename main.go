@@ -7,7 +7,7 @@ import (
 )
 
 const baseGoURL = "https://go.googlesource.com/go/+/"
-const version = "go1.5"
+const version = "go1.6"
 
 func checkURL(url string) bool {
 	r, err := http.Head(url)
